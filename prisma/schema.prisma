@@ -1,0 +1,533 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── ENUMS ───────────────────────────────────────────────
+
+enum Role {
+  OWNER
+  STAFF
+  TEACHER
+  MEMBER
+  GUEST
+}
+
+enum MemberStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  TRIAL
+}
+
+enum SessionStatus {
+  SCHEDULED
+  CANCELLED
+  COMPLETED
+  RESCHEDULED
+}
+
+enum BookingStatus {
+  CONFIRMED
+  CANCELLED
+  ATTENDED
+  NO_SHOW
+}
+
+enum WaitlistStatus {
+  WAITING
+  NOTIFIED
+  EXPIRED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  REFUNDED
+  FAILED
+}
+
+enum TrialStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+enum CampaignType {
+  TRIAL_CASHBACK
+  MEMBERSHIP_DISCOUNT
+  EVENT_DISCOUNT
+  REFERRAL
+  SEASONAL
+}
+
+enum DiscountType {
+  FIXED
+  PERCENTAGE
+}
+
+enum ChangeType {
+  CANCEL
+  RESCHEDULE
+  SUBSTITUTE
+  TIME_CHANGE
+}
+
+enum RequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// ─── USERS & AUTH ────────────────────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified DateTime?
+  name          String?
+  image         String?
+  password      String?
+  phone         String?   // optional — never required
+  role          Role      @default(GUEST)
+  locale        String    @default("ja")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  profile        Profile?
+  member         Member?
+  teacher        Teacher?
+  bookings       Booking[]
+  eventBookings  EventBooking[]
+  trialLessons   TrialLesson[]
+  auditLogs      AuditLog[]
+  aiLogs         AiOperationLog[]
+  accounts       Account[]
+  sessions       Session[]
+
+  @@index([email])
+  @@index([role])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ─── PROFILES ────────────────────────────────────────────
+
+model Profile {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  firstName    String?
+  lastName     String?
+  nameKana     String?
+  birthday     DateTime?
+  address      String?
+  country      String?
+  bio          String?
+  avatarUrl    String?
+  utmSource    String?
+  utmMedium    String?
+  utmCampaign  String?
+  leadSourceId String?
+  leadSource   LeadSource? @relation(fields: [leadSourceId], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// ─── MEMBERSHIP ──────────────────────────────────────────
+
+model MembershipPlan {
+  id                  String   @id @default(cuid())
+  name                String   // e.g. "ゴールド"
+  nameEn              String?
+  slug                String   @unique
+  description         String?
+  descriptionEn       String?
+  price               Int      // monthly JPY
+  bookingOpenDay      Int      // day-of-month booking opens (10=Gold, 15=Regular)
+  maxBookingsPerMonth Int?
+  features            Json?    // string[]
+  color               String?  // hex for UI
+  isActive            Boolean  @default(true)
+  sortOrder           Int      @default(0)
+  members             Member[]
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model Member {
+  id               String         @id @default(cuid())
+  userId           String         @unique
+  user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  membershipPlanId String
+  membershipPlan   MembershipPlan @relation(fields: [membershipPlanId], references: [id])
+  status           MemberStatus   @default(ACTIVE)
+  startDate        DateTime
+  endDate          DateTime?
+  trialAt          DateTime?
+  convertedAt      DateTime?
+  campaignId       String?
+  campaign         Campaign?      @relation(fields: [campaignId], references: [id])
+  cashbackEligible Boolean        @default(false)
+  cashbackApplied  Boolean        @default(false)
+  notes            String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  @@index([status])
+  @@index([membershipPlanId])
+}
+
+// ─── TEACHERS ────────────────────────────────────────────
+
+model Teacher {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  displayName   String?
+  bio           String?
+  bioEn         String?
+  specialties   Json?    // string[]
+  photoUrl      String?
+  instagramUrl  String?
+  isActive      Boolean  @default(true)
+  sortOrder     Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  sessions              ClassSession[]           @relation("TeacherSessions")
+  substituteAssignments SubstituteAssignment[]
+  changeRequests        ScheduleChangeRequest[]  @relation("RequestedBy")
+}
+
+// ─── CLASSES & SCHEDULING ────────────────────────────────
+
+model RecurringRule {
+  id            String    @id @default(cuid())
+  name          String
+  nameEn        String?
+  dayOfWeek     Int       // 0=Sun … 6=Sat
+  startTime     String    // "19:00"
+  endTime       String    // "20:00"
+  teacherId     String
+  location      String?
+  capacity      Int       @default(20)
+  description   String?
+  descriptionEn String?
+  color         String?
+  isActive      Boolean   @default(true)
+  startDate     DateTime
+  endDate       DateTime?
+  autoGenerate  Boolean   @default(true)
+  sessions      ClassSession[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([dayOfWeek])
+  @@index([isActive])
+}
+
+model ClassSession {
+  id              String        @id @default(cuid())
+  recurringRuleId String?
+  recurringRule   RecurringRule? @relation(fields: [recurringRuleId], references: [id])
+  title           String
+  titleEn         String?
+  date            DateTime
+  startTime       String
+  endTime         String
+  teacherId       String
+  teacher         Teacher       @relation("TeacherSessions", fields: [teacherId], references: [id])
+  location        String?
+  capacity        Int
+  status          SessionStatus @default(SCHEDULED)
+  description     String?
+  descriptionEn   String?
+  isPublic        Boolean       @default(true)
+  isTrial         Boolean       @default(false)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  bookings              Booking[]
+  waitlists             Waitlist[]
+  changeRequests        ScheduleChangeRequest[]
+  substituteAssignments SubstituteAssignment[]
+
+  @@index([date])
+  @@index([teacherId])
+  @@index([status])
+}
+
+model Booking {
+  id          String        @id @default(cuid())
+  userId      String
+  user        User          @relation(fields: [userId], references: [id])
+  sessionId   String
+  session     ClassSession  @relation(fields: [sessionId], references: [id])
+  status      BookingStatus @default(CONFIRMED)
+  notes       String?
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@unique([userId, sessionId])
+  @@index([userId])
+  @@index([sessionId])
+  @@index([status])
+}
+
+model Waitlist {
+  id        String         @id @default(cuid())
+  userId    String
+  sessionId String
+  session   ClassSession   @relation(fields: [sessionId], references: [id])
+  position  Int
+  status    WaitlistStatus @default(WAITING)
+  createdAt DateTime       @default(now())
+
+  @@unique([userId, sessionId])
+  @@index([sessionId, position])
+}
+
+// ─── EVENTS & WORKSHOPS ──────────────────────────────────
+
+model Event {
+  id            String   @id @default(cuid())
+  title         String
+  titleEn       String?
+  description   String?
+  descriptionEn String?
+  date          DateTime
+  startTime     String
+  endTime       String
+  location      String?
+  capacity      Int
+  price         Int      // JPY
+  imageUrl      String?
+  category      String?  // "workshop" | "special" | "retreat" etc.
+  teacherId     String?
+  isPublished   Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  bookings EventBooking[]
+
+  @@index([date])
+  @@index([isPublished])
+}
+
+model EventBooking {
+  id            String        @id @default(cuid())
+  userId        String
+  user          User          @relation(fields: [userId], references: [id])
+  eventId       String
+  event         Event         @relation(fields: [eventId], references: [id])
+  status        BookingStatus @default(CONFIRMED)
+  paymentStatus PaymentStatus @default(PENDING)
+  paymentId     String?
+  amount        Int
+  utmSource     String?
+  utmMedium     String?
+  utmCampaign   String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@unique([userId, eventId])
+  @@index([eventId])
+}
+
+// ─── TRIAL LESSONS ───────────────────────────────────────
+
+model TrialLesson {
+  id                  String        @id @default(cuid())
+  userId              String
+  user                User          @relation(fields: [userId], references: [id])
+  scheduledAt         DateTime
+  status              TrialStatus   @default(PENDING)
+  price               Int           @default(3300)
+  paymentStatus       PaymentStatus @default(PENDING)
+  paymentId           String?
+  convertedToMember   Boolean       @default(false)
+  campaignId          String?
+  campaign            Campaign?     @relation(fields: [campaignId], references: [id])
+  utmSource           String?
+  utmMedium           String?
+  utmCampaign         String?
+  notes               String?
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([scheduledAt])
+}
+
+// ─── CAMPAIGNS & ANALYTICS ───────────────────────────────
+
+model Campaign {
+  id             String       @id @default(cuid())
+  name           String
+  description    String?
+  type           CampaignType
+  startDate      DateTime
+  endDate        DateTime?
+  discountType   DiscountType?
+  discountValue  Int?
+  cashbackAmount Int?
+  isActive       Boolean      @default(true)
+  conditions     Json?        // { "convertSameDay": true, etc. }
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  members     Member[]
+  trials      TrialLesson[]
+  conversions Conversion[]
+
+  @@index([isActive])
+}
+
+model Conversion {
+  id          String    @id @default(cuid())
+  userId      String
+  trialId     String?
+  campaignId  String?
+  campaign    Campaign? @relation(fields: [campaignId], references: [id])
+  convertedAt DateTime  @default(now())
+  planId      String?
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  revenue     Int?
+
+  @@index([campaignId])
+  @@index([utmSource])
+}
+
+model LeadSource {
+  id        String    @id @default(cuid())
+  name      String
+  nameEn    String?
+  slug      String    @unique
+  profiles  Profile[]
+  createdAt DateTime  @default(now())
+}
+
+// ─── SCHEDULE CHANGE REQUESTS ────────────────────────────
+
+model ScheduleChangeRequest {
+  id                String        @id @default(cuid())
+  sessionId         String
+  session           ClassSession  @relation(fields: [sessionId], references: [id])
+  requestedById     String
+  requestedBy       Teacher       @relation("RequestedBy", fields: [requestedById], references: [id])
+  type              ChangeType
+  proposedDate      DateTime?
+  proposedStartTime String?
+  proposedEndTime   String?
+  reason            String
+  status            RequestStatus @default(PENDING)
+  reviewedById      String?
+  reviewedAt        DateTime?
+  reviewNotes       String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  @@index([status])
+}
+
+model SubstituteAssignment {
+  id         String       @id @default(cuid())
+  sessionId  String
+  session    ClassSession @relation(fields: [sessionId], references: [id])
+  teacherId  String
+  teacher    Teacher      @relation(fields: [teacherId], references: [id])
+  assignedAt DateTime     @default(now())
+  reason     String?
+}
+
+// ─── ANNOUNCEMENTS ───────────────────────────────────────
+
+model Announcement {
+  id          String    @id @default(cuid())
+  title       String
+  titleEn     String?
+  body        String
+  bodyEn      String?
+  targetRoles Role[]
+  isPublished Boolean   @default(false)
+  publishedAt DateTime?
+  expiresAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+// ─── AUDIT & AI LOGS ─────────────────────────────────────
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  action     String
+  resource   String
+  resourceId String?
+  detail     Json?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+  @@index([resource])
+  @@index([createdAt])
+}
+
+model AiOperationLog {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  prompt    String
+  response  String
+  action    String?
+  success   Boolean
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}

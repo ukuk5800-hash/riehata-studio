@@ -1,0 +1,118 @@
+{
+  "nav": {
+    "lessons": "クラス一覧",
+    "calendar": "カレンダー",
+    "trial": "体験レッスン",
+    "workshops": "ワークショップ",
+    "plans": "会員プラン",
+    "login": "ログイン",
+    "register": "新規登録",
+    "mypage": "マイページ",
+    "logout": "ログアウト",
+    "admin": "管理画面"
+  },
+  "hero": {
+    "badge": "期間限定キャンペーン実施中",
+    "title": "身体と心を整える、",
+    "titleAccent": "あなただけの時間。",
+    "sub": "体験レッスン ¥3,300 ／ 当日入会でキャッシュバック",
+    "cta_primary": "体験レッスンを予約する",
+    "cta_secondary": "クラスを見る"
+  },
+  "stats": {
+    "members": "会員数",
+    "classes": "月間クラス数",
+    "satisfaction": "満足度",
+    "instructors": "講師数"
+  },
+  "class_types": {
+    "title": "クラスの種類",
+    "sub": "あなたのペースで、自分らしく。"
+  },
+  "schedule": {
+    "title": "今週のスケジュール",
+    "book": "予約する",
+    "full": "満席",
+    "waitlist": "キャンセル待ち",
+    "remaining": "残{count}席",
+    "login_required": "予約にはログインが必要です"
+  },
+  "instructors": {
+    "title": "講師紹介",
+    "sub": "経験豊富な講師があなたをサポートします。"
+  },
+  "plans": {
+    "title": "会員プラン",
+    "sub": "あなたのライフスタイルに合ったプランを。",
+    "per_month": "月額",
+    "cta": "このプランで始める",
+    "booking_open": "毎月{day}日から予約開始"
+  },
+  "trial": {
+    "title": "まずは体験レッスンから",
+    "price": "¥3,300",
+    "cashback_note": "※当日入会でキャッシュバック対象",
+    "cta": "体験を予約する",
+    "how_title": "体験の流れ",
+    "step1_title": "申し込み",
+    "step1_desc": "フォームから日時を選んで予約。メール確認のみでOK。",
+    "step2_title": "体験レッスン",
+    "step2_desc": "スタジオにお越しください。動きやすい服装でどうぞ。",
+    "step3_title": "入会相談",
+    "step3_desc": "当日入会でキャッシュバック！プランをご相談します。"
+  },
+  "auth": {
+    "login_title": "ログイン",
+    "register_title": "新規会員登録",
+    "email": "メールアドレス",
+    "password": "パスワード",
+    "name": "お名前",
+    "phone": "電話番号（任意）",
+    "submit_login": "ログインする",
+    "submit_register": "登録する",
+    "google": "Googleでログイン",
+    "no_account": "アカウントをお持ちでない方",
+    "has_account": "すでにアカウントをお持ちの方",
+    "forgot": "パスワードをお忘れの方",
+    "terms": "利用規約・プライバシーポリシーに同意する",
+    "phone_note": "電話番号は任意です。なくても登録できます。"
+  },
+  "mypage": {
+    "title": "マイページ",
+    "upcoming": "次回の予約",
+    "history": "受講履歴",
+    "profile": "プロフィール",
+    "membership": "会員情報",
+    "bookings": "予約一覧",
+    "cancel": "キャンセル",
+    "waitlist_position": "キャンセル待ち {pos} 番目"
+  },
+  "common": {
+    "loading": "読み込み中...",
+    "error": "エラーが発生しました",
+    "save": "保存する",
+    "cancel": "キャンセル",
+    "close": "閉じる",
+    "back": "戻る",
+    "next": "次へ",
+    "confirm": "確認する",
+    "delete": "削除",
+    "edit": "編集",
+    "add": "追加",
+    "search": "検索",
+    "filter": "絞り込み",
+    "all": "すべて",
+    "none": "なし",
+    "yes": "はい",
+    "no": "いいえ"
+  },
+  "footer": {
+    "tagline": "身体と心を整える場所",
+    "links_title": "リンク",
+    "legal_title": "法的情報",
+    "privacy": "プライバシーポリシー",
+    "terms": "利用規約",
+    "contact": "お問い合わせ",
+    "copyright": "© 2025 RIEHATA STUDIO. All rights reserved."
+  }
+}

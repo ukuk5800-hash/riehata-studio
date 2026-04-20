@@ -1,0 +1,118 @@
+{
+  "nav": {
+    "lessons": "Classes",
+    "calendar": "Calendar",
+    "trial": "Trial Lesson",
+    "workshops": "Workshops",
+    "plans": "Membership",
+    "login": "Login",
+    "register": "Sign Up",
+    "mypage": "My Page",
+    "logout": "Log Out",
+    "admin": "Admin"
+  },
+  "hero": {
+    "badge": "Limited Campaign Now On",
+    "title": "Find balance in",
+    "titleAccent": "body & mind.",
+    "sub": "Trial lesson ¥3,300 / Cashback when you join same day",
+    "cta_primary": "Book a Trial Lesson",
+    "cta_secondary": "View Classes"
+  },
+  "stats": {
+    "members": "Members",
+    "classes": "Classes / Month",
+    "satisfaction": "Satisfaction",
+    "instructors": "Instructors"
+  },
+  "class_types": {
+    "title": "Class Types",
+    "sub": "At your own pace, in your own way."
+  },
+  "schedule": {
+    "title": "This Week's Schedule",
+    "book": "Book",
+    "full": "Full",
+    "waitlist": "Waitlist",
+    "remaining": "{count} spots left",
+    "login_required": "Please log in to book"
+  },
+  "instructors": {
+    "title": "Instructors",
+    "sub": "Experienced instructors to support your journey."
+  },
+  "plans": {
+    "title": "Membership Plans",
+    "sub": "Find the plan that fits your lifestyle.",
+    "per_month": "/ month",
+    "cta": "Get Started",
+    "booking_open": "Booking opens on the {day}th each month"
+  },
+  "trial": {
+    "title": "Start with a Trial Lesson",
+    "price": "¥3,300",
+    "cashback_note": "*Cashback eligible if you join on the same day",
+    "cta": "Book Your Trial",
+    "how_title": "How It Works",
+    "step1_title": "Book Online",
+    "step1_desc": "Pick a date and time. Only your email is required.",
+    "step2_title": "Attend the Lesson",
+    "step2_desc": "Visit the studio. Wear comfortable clothing.",
+    "step3_title": "Join & Save",
+    "step3_desc": "Join the same day for cashback. Let's find your plan!"
+  },
+  "auth": {
+    "login_title": "Login",
+    "register_title": "Create Account",
+    "email": "Email Address",
+    "password": "Password",
+    "name": "Full Name",
+    "phone": "Phone Number (Optional)",
+    "submit_login": "Login",
+    "submit_register": "Create Account",
+    "google": "Continue with Google",
+    "no_account": "Don't have an account?",
+    "has_account": "Already have an account?",
+    "forgot": "Forgot password?",
+    "terms": "I agree to the Terms of Service and Privacy Policy",
+    "phone_note": "Phone number is optional."
+  },
+  "mypage": {
+    "title": "My Page",
+    "upcoming": "Upcoming Classes",
+    "history": "Class History",
+    "profile": "Profile",
+    "membership": "Membership",
+    "bookings": "My Bookings",
+    "cancel": "Cancel",
+    "waitlist_position": "Waitlist position: {pos}"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "filter": "Filter",
+    "all": "All",
+    "none": "None",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "footer": {
+    "tagline": "A place to balance body & mind",
+    "links_title": "Links",
+    "legal_title": "Legal",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "contact": "Contact",
+    "copyright": "© 2025 RIEHATA STUDIO. All rights reserved."
+  }
+}
