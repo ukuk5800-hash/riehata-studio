@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Users, CalendarDays, TrendingUp, AlertCircle, Clock, CheckCircle, XCircle } from 'lucide-react'
+import { Users, CalendarDays, TrendingUp, AlertCircle, CheckCircle, XCircle } from 'lucide-react'
 
 const KPI = [
   { label: '今日の予約', value: '18', sub: '定員24名中', icon: CalendarDays, color: 'text-teal-600', bg: 'bg-teal-50', trend: '+3', up: true },
@@ -28,7 +28,6 @@ const PENDING_REQUESTS = [
   { teacher: '鈴木 ハル', type: 'SUBSTITUTE', session: '5月22日 瞑想', reason: '出張のため代行希望' },
 ]
 
-// Simple bar chart using CSS
 function BarChart({ data }: { data: { label: string; value: number; max?: number }[] }) {
   const max = Math.max(...data.map(d => d.value))
   return (
@@ -54,17 +53,15 @@ export default function AdminDashboard() {
   const dateStr = today.toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' })
 
   return (
-    <div className="p-6 space-y-6">
-      {/* Page title */}
+    <div className="p-4 md:p-6 space-y-6 max-w-[100vw] overflow-x-hidden">
       <div>
         <h1 className="text-xl font-bold text-slate-900">ダッシュボード</h1>
         <p className="text-sm text-slate-500">{dateStr}</p>
       </div>
 
-      {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {KPI.map(k => (
-          <div key={k.label} className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+          <div key={k.label} className="bg-white rounded-xl border border-slate-200 shadow-sm p-4 md:p-5">
             <div className="flex items-center justify-between mb-3">
               <div className={`w-10 h-10 ${k.bg} rounded-lg flex items-center justify-center`}>
                 <k.icon size={18} className={k.color} />
@@ -81,8 +78,7 @@ export default function AdminDashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Today's schedule */}
-        <div className="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm">
+        <div className="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200">
             <h2 className="font-bold text-slate-900">本日のスケジュール</h2>
             <Link href="/admin/classes" className="text-sm text-teal-600 hover:underline">全て見る →</Link>
@@ -92,21 +88,21 @@ export default function AdminDashboard() {
               const ratio = c.booked / c.cap
               const full = ratio >= 1
               return (
-                <div key={i} className="flex items-center gap-4 px-5 py-3.5">
+                <div key={i} className="flex flex-wrap md:flex-nowrap items-center gap-4 px-5 py-3.5">
                   <span className="font-mono text-sm text-slate-600 w-12 shrink-0">{c.time}</span>
-                  <div className="flex-1 min-w-0">
+                  <div className="flex-1 min-w-[120px]">
                     <p className="font-semibold text-sm text-slate-800 truncate">{c.title}</p>
                     <p className="text-xs text-slate-500">{c.teacher}</p>
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 w-full md:w-auto mt-2 md:mt-0 justify-between md:justify-end">
                     <div className="flex items-center gap-1.5">
-                      <div className="w-16 bg-slate-100 rounded-full h-1.5">
+                      <div className="w-16 bg-slate-100 rounded-full h-1.5 hidden md:block">
                         <div className={`h-1.5 rounded-full ${full ? 'bg-red-400' : ratio >= 0.8 ? 'bg-amber-400' : 'bg-teal-500'}`}
                           style={{ width: `${Math.min(ratio * 100, 100)}%` }} />
                       </div>
-                      <span className="text-xs text-slate-500 w-10">{c.booked}/{c.cap}</span>
+                      <span className="text-xs text-slate-500 w-10 text-right">{c.booked}/{c.cap}</span>
                     </div>
-                    <span className={`text-xs px-2 py-0.5 rounded-full ${full ? 'bg-red-100 text-red-600' : 'bg-teal-100 text-teal-700'}`}>
+                    <span className={`text-xs px-2 py-0.5 rounded-full whitespace-nowrap ${full ? 'bg-red-100 text-red-600' : 'bg-teal-100 text-teal-700'}`}>
                       {full ? '満席' : '受付中'}
                     </span>
                   </div>
@@ -116,7 +112,6 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Weekly bookings chart */}
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
           <h2 className="font-bold text-slate-900 mb-1">今週の予約数</h2>
           <p className="text-xs text-slate-400 mb-4">日別の予約件数</p>
@@ -129,8 +124,7 @@ export default function AdminDashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent activity */}
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm">
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200">
             <h2 className="font-bold text-slate-900">最近の予約・申込</h2>
             <Link href="/admin/bookings" className="text-sm text-teal-600 hover:underline">全て見る →</Link>
@@ -153,8 +147,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Pending requests */}
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm">
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200">
             <div className="flex items-center gap-2">
               <h2 className="font-bold text-slate-900">変更申請（要対応）</h2>
@@ -174,7 +167,7 @@ export default function AdminDashboard() {
                     r.type === 'RESCHEDULE' ? 'bg-amber-100 text-amber-700' :
                     'bg-blue-100 text-blue-700'
                   }`}>
-                    {r.type === 'CANCEL' ? '休講申請' : r.type === 'RESCHEDULE' ? '日程変更' : '代行依頼'}
+                    {r.type === 'CANCEL' ? '休講' : r.type === 'RESCHEDULE' ? '変更' : '代行'}
                   </span>
                 </div>
                 <p className="text-xs text-slate-600 mb-1">{r.session}</p>
@@ -193,21 +186,41 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Membership distribution */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
-        <h2 className="font-bold text-slate-900 mb-4">会員プラン分布</h2>
-        <div className="flex items-center gap-6">
-          <div className="flex gap-1 h-6 flex-1 rounded-full overflow-hidden">
-            <div className="bg-yellow-500 h-full" style={{ width: '38%' }} />
-            <div className="bg-teal-500 h-full" style={{ width: '45%' }} />
-            <div className="bg-indigo-400 h-full" style={{ width: '17%' }} />
+      {/* 会員プラン分布（円グラフ版） - スマホでも絶対にはみ出さない！ */}
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-4 md:p-5 overflow-hidden">
+        <h2 className="font-bold text-slate-900 mb-1">会員プラン分布</h2>
+        <p className="text-xs text-slate-400 mb-6">現在のプラン別構成比</p>
+        
+        {/* スマホは縦並び(flex-col)、PCは横並び(md:flex-row) */}
+        <div className="flex flex-col md:flex-row items-center justify-around gap-8 py-4">
+          <div className="relative w-40 h-40 md:w-48 md:h-48 shrink-0">
+            <svg viewBox="0 0 36 36" className="w-full h-full transform -rotate-90">
+              <circle cx="18" cy="18" r="15.9" fill="transparent" stroke="#f1f5f9" strokeWidth="3.5" />
+              <circle cx="18" cy="18" r="15.9" fill="transparent" stroke="#0d9488" strokeWidth="3.5" strokeDasharray="45 55" strokeDashoffset="0" />
+              <circle cx="18" cy="18" r="15.9" fill="transparent" stroke="#D4AF37" strokeWidth="3.5" strokeDasharray="38 62" strokeDashoffset="-45" />
+              <circle cx="18" cy="18" r="15.9" fill="transparent" stroke="#6366f1" strokeWidth="3.5" strokeDasharray="17 83" strokeDashoffset="-83" />
+            </svg>
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <span className="text-2xl font-bold text-slate-800">506</span>
+              <span className="text-[10px] text-slate-400">会員総数</span>
+            </div>
           </div>
-          <div className="flex gap-4 shrink-0">
-            {[['#D4AF37', 'ゴールド', '38%', '192名'], ['#0d9488', 'レギュラー', '45%', '228名'], ['#6366f1', 'ライト', '17%', '86名']].map(([c, l, p, n]) => (
-              <div key={l} className="flex items-center gap-1.5 text-xs text-slate-600">
-                <span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: c }} />
-                <span>{l}</span>
-                <span className="text-slate-400">{p}（{n}）</span>
+
+          <div className="grid grid-cols-1 gap-3 w-full max-w-xs">
+            {[
+              { color: '#0d9488', label: 'レギュラー', percent: '45%', count: '228名', bg: 'bg-teal-500' },
+              { color: '#D4AF37', label: 'ゴールド', percent: '38%', count: '192名', bg: 'bg-yellow-500' },
+              { color: '#6366f1', label: 'ライト', percent: '17%', count: '86名', bg: 'bg-indigo-400' },
+            ].map((item) => (
+              <div key={item.label} className="flex items-center justify-between p-3 rounded-lg bg-slate-50 border border-slate-100">
+                <div className="flex items-center gap-3">
+                  <div className={`w-3 h-3 rounded-full ${item.bg} shrink-0`} />
+                  <span className="text-sm font-semibold text-slate-700">{item.label}</span>
+                </div>
+                <div className="text-right whitespace-nowrap">
+                  <span className="text-sm font-bold text-slate-800">{item.percent}</span>
+                  <span className="text-xs text-slate-400 ml-2">({item.count})</span>
+                </div>
               </div>
             ))}
           </div>

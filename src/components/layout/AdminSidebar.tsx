@@ -62,10 +62,9 @@ export default function AdminSidebar({ userName = 'Admin', userRole = 'OWNER' }:
 
   return (
     <aside className={cn(
-      'flex flex-col bg-slate-900 text-slate-300 h-screen sticky top-0 transition-all duration-300 shrink-0',
+      'flex flex-col bg-slate-900 text-slate-300 h-full transition-all duration-300 shrink-0',
       collapsed ? 'w-16' : 'w-60'
     )}>
-      {/* Logo */}
       <div className="flex items-center gap-2 px-4 h-16 border-b border-slate-800 shrink-0">
         <span className="w-8 h-8 bg-teal-600 rounded-lg flex items-center justify-center text-white text-sm font-bold shrink-0">A</span>
         {!collapsed && (
@@ -82,7 +81,6 @@ export default function AdminSidebar({ userName = 'Admin', userRole = 'OWNER' }:
         </button>
       </div>
 
-      {/* Nav */}
       <nav className="flex-1 overflow-y-auto py-4 space-y-1 px-2">
         {navGroups.map(group => (
           <div key={group.label} className="mb-2">
@@ -126,7 +124,6 @@ export default function AdminSidebar({ userName = 'Admin', userRole = 'OWNER' }:
         ))}
       </nav>
 
-      {/* User */}
       <div className="border-t border-slate-800 p-3 shrink-0">
         <div className="flex items-center gap-3">
           <span className="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center text-white text-sm font-bold shrink-0">

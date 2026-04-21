@@ -1,7 +1,13 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
 import './globals.css'
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+}
 
 export const metadata: Metadata = {
   title: {
@@ -9,11 +15,6 @@ export const metadata: Metadata = {
     template: '%s | __スタジオ',
   },
   description: '身体と心を整える、あなただけの時間。体験レッスン ¥3,300から。',
-  openGraph: {
-    type: 'website',
-    locale: 'ja_JP',
-    siteName: '__スタジオ',
-  },
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
@@ -22,9 +23,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   return (
     <html lang={locale} suppressHydrationWarning>
-      <body>
+      <body className="overflow-x-hidden antialiased text-slate-900 bg-gray-50">
         <NextIntlClientProvider messages={messages}>
-          {children}
+          <div className="flex flex-col min-h-screen">
+            {children}
+          </div>
         </NextIntlClientProvider>
       </body>
     </html>
